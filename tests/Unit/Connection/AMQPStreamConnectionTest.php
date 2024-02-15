@@ -13,7 +13,7 @@ class AMQPStreamConnectionTest extends TestCase
     {
         set_error_handler(
             static function ( $errno, $errstr ) {
-                throw new \Exception( $errstr, $errno );
+                throw new Exception( $errstr, $errno );
             },
             E_USER_DEPRECATED
         );
@@ -23,6 +23,7 @@ class AMQPStreamConnectionTest extends TestCase
     {
         restore_error_handler();
     }
+
     /**
      * @test
      */
@@ -78,6 +79,32 @@ class AMQPStreamConnectionTest extends TestCase
             0,
             3.0,
             'test_ssl_protocol'
+        );
+    }
+
+    /**
+     * @test
+     * Generate deprecation warning if ssl_protocol is set with named parameters
+     */
+    public function trigger_deprecation_is_ssl_protocl_set_with_named_params(): void
+    {
+        if (PHP_VERSION_ID < 80000) {
+            $this->markTestSkipped('Named parameters are available in PHP 8.0+');
+        }
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(
+            '$ssl_protocol parameter is deprecated, use stream_context_set_option($context, \'ssl\', \'crypto_method\', $ssl_protocol) instead (see https://www.php.net/manual/en/function.stream-socket-enable-crypto.php for possible values)'
+        );
+
+        new AMQPStreamConnection(
+            host: HOST,
+            port: PORT,
+            user: USER,
+            password: PASS,
+            vhost: VHOST,
+            channel_rpc_timeout: 3.0,
+            ssl_protocol: 'test_ssl_protocol'
         );
     }
 }
