@@ -89,12 +89,12 @@ jobs:
       run: php ./tests/wait_broker.php
 
     - name: PHPUnit tests
-      run: ./vendor/bin/phpunit -d memory_limit=2G
+      run: ./vendor/bin/phpunit
       if: matrix.coverage == 'none'
 
-#    - name: PHPUnit tests + coverage
-#      run: ./vendor/bin/phpunit --coverage-clover=coverage.xml -d memory_limit=2G
-#      if: matrix.coverage != 'none'
+    - name: PHPUnit tests + coverage
+      run: ./vendor/bin/phpunit --coverage-clover=coverage.xml
+      if: matrix.coverage != 'none'
 
     - name: Upload Codecov coverage
       if: matrix.coverage != 'none'
