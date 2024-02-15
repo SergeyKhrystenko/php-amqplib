@@ -39,46 +39,11 @@ class AMQPStreamConnectionTest extends TestCase
      * @test
      * Generate deprecation warning if ssl_protocol is set
      */
-    public function trigger_deprecation_is_ssl_protocol_set_with_named_params(): void
-    {
-        if (PHP_VERSION_ID < 80000) {
-            $this->markTestSkipped('Named parameters are available in PHP 8.0+');
-        }
-
-        $deprecationMessage = '';
-        $deprecationCode = '';
-        $previousHandler = set_error_handler(
-            static function ($errno, $errstr) use (&$deprecationMessage, &$deprecationCode) {
-                $deprecationMessage = $errstr;
-                $deprecationCode = $errno;
-            },
-            E_USER_DEPRECATED
-        );
-
-        new AMQPStreamConnection(
-            host: HOST,
-            port: PORT,
-            user: USER,
-            password: PASS,
-            vhost: VHOST,
-            channel_rpc_timeout: 3.0,
-            ssl_protocol: 'test_ssl_protocol'
-        );
-
-        set_error_handler($previousHandler);
-        $this->assertEquals(E_USER_DEPRECATED, $deprecationCode);
-        $this->assertEquals('$ssl_protocol parameter is deprecated, use stream_context_set_option($context, \'ssl\', \'crypto_method\', $ssl_protocol) instead (see https://www.php.net/manual/en/function.stream-socket-enable-crypto.php for possible values)', $deprecationMessage);
-    }
-
-    /**
-     * @test
-     * Generate deprecation warning if ssl_protocol is set
-     */
     public function trigger_deprecation_is_ssl_protocol_set(): void
     {
         $deprecationMessage = '';
         $deprecationCode = '';
-        $previousHandler = set_error_handler(
+        set_error_handler(
             static function ($errno, $errstr) use (&$deprecationMessage, &$deprecationCode) {
                 $deprecationMessage = $errstr;
                 $deprecationCode = $errno;
@@ -105,7 +70,7 @@ class AMQPStreamConnectionTest extends TestCase
             'test_ssl_protocol'
         );
 
-        set_error_handler($previousHandler);
+        restore_error_handler();
         $this->assertEquals(E_USER_DEPRECATED, $deprecationCode);
         $this->assertEquals('$ssl_protocol parameter is deprecated, use stream_context_set_option($context, \'ssl\', \'crypto_method\', $ssl_protocol) instead (see https://www.php.net/manual/en/function.stream-socket-enable-crypto.php for possible values)', $deprecationMessage);
     }
