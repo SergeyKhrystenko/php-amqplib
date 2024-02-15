@@ -5,10 +5,24 @@ namespace PhpAmqpLib\Tests\Unit\Connection;
 use InvalidArgumentException;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
+use Exception;
 
 class AMQPStreamConnectionTest extends TestCase
 {
+    public function setUp(): void
+    {
+        set_error_handler(
+            static function ( $errno, $errstr ) {
+                throw new \Exception( $errstr, $errno );
+            },
+            E_USER_DEPRECATED
+        );
+    }
+
+    public function tearDown(): void
+    {
+        restore_error_handler();
+    }
     /**
      * @test
      */
@@ -42,19 +56,10 @@ class AMQPStreamConnectionTest extends TestCase
      */
     public function trigger_deprecation_is_ssl_protocl_set(): void
     {
-        // this is a workaround for deprecated PHPUnit functions
-        /*set_error_handler(
-            static function ($errno, $errstr) {
-                restore_error_handler();
-                throw new RuntimeException($errstr, $errno);
-            },
-            E_USER_DEPRECATED
-        );
-
-        $this->expectException(RuntimeException::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage(
             '$ssl_protocol parameter is deprecated, use stream_context_set_option($context, \'ssl\', \'crypto_method\', $ssl_protocol) instead (see https://www.php.net/manual/en/function.stream-socket-enable-crypto.php for possible values)'
-        );*/
+        );
 
         new AMQPStreamConnection(
             HOST,
