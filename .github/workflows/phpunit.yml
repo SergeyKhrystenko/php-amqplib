@@ -89,11 +89,11 @@ jobs:
       run: php ./tests/wait_broker.php
 
     - name: PHPUnit tests
-      run: ./vendor/bin/phpunit
+      run: ./vendor/bin/phpunit --debug
       if: matrix.coverage == 'none'
 
     - name: PHPUnit tests + coverage
-      run: ./vendor/bin/phpunit --coverage-clover=coverage.xml
+      run: ./vendor/bin/phpunit --coverage-clover=coverage.xml --debug
       if: matrix.coverage != 'none'
 
     - name: Upload Codecov coverage
